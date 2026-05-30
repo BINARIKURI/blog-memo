@@ -1,0 +1,9 @@
+{
+  "name": "blog-memo",
+  "version": "1.0.0",
+  "description": "🌸 梦の记事本 | 个人博客",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  }
+}
