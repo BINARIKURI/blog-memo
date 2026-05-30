@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 梦の记事本 | 个人博客</title>
+    <style>
+        :root {
+            --pink: #ff9eb5;
+            --pink-light: #ffe0e8;
+            --pink-dark: #e87a93;
+            --blue: #7ec8e3;
+            --blue-light: #d4f0fa;
+            --purple: #c3aed6;
+            --purple-light: #ede4f5;
+            --mint: #b5ead7;
+            --mint-light: #e0f7ed;
+            --cream: #fff8f0;
+            --white: #ffffff;
+            --text: #4a3f47;
+            --text-light: #7a6e75;
+            --text-lighter: #a0959b;
+            --shadow-sm: 0 2px 12px rgba(255, 158, 181, 0.15);
+            --shadow-md: 0 8px 30px rgba(255, 158, 181, 0.2);
+            --shadow-lg: 0 20px 50px rgba(200, 160, 180, 0.25);
+            --radius-sm: 12px;
+            --radius: 20px;
+            --radius-lg: 28px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+            --font-decorative: 'STKaiti', 'KaiTi', '楷体', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pink) #fff0f3;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f3;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--pink);
+            border-radius: 4px;
+            border: 2px solid #fff0f3;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--pink-dark);
+        }
+
+        body {
+            background: linear-gradient(180deg, #fff5f7 0%, #fef9fb 30%, #fdf2f8 60%, #fef5f9 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: var(--font-main);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 背景装饰圆点 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -180px;
+            right: -120px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 158, 181, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: bgFloat1 12s ease-in-out infinite;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -150px;
+            left: -100px;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(126, 200, 227, 0.07) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: bgFloat2 15s ease-in-out infinite;
+        }
+        @keyframes bgFloat1 {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(40px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+        }
+        @keyframes bgFloat2 {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(-30px, -40px) scale(1.08);
+            }
+            66% {
+                transform: translate(25px, 25px) scale(0.92);
+            }
+        }
+
+        /* 樱花画布 */
+        #sakura-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 主容器 */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ============ 导航栏 ============ */
+        .navbar {
+            position: sticky;
+            top: 16px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 158, 181, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 0.7rem 1.8rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .navbar:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255, 158, 181, 0.5);
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--pink-dark);
+            text-decoration: none;
+            cursor: pointer;
+            letter-spacing: -0.5px;
+            font-family: var(--font-decorative);
+        }
+        .nav-brand .brand-icon {
+            font-size: 1.6rem;
+            animation: bounceIcon 2s ease-in-out infinite;
+        }
+        @keyframes bounceIcon {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-8px);
+            }
+            50% {
+                transform: translateY(0);
+            }
+            70% {
+                transform: translateY(-4px);
+            }
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.3rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+        }
+        .nav-links a:hover {
+            background: var(--pink-light);
+            color: var(--pink-dark);
+            transform: translateY(-1px);
+        }
+        .nav-links a.active {
+            background: var(--pink);
+            color: #fff;
+            font-weight: 600;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 8px;
+            z-index: 10;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        .hamburger:hover {
+            background: var(--pink-light);
+        }
+        .hamburger span {
+            width: 24px;
+            height: 2.5px;
+            background: var(--pink-dark);
+            border-radius: 3px;
+            transition: var(--transition);
+            display: block;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 220px;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: var(--radius);
+                padding: 1.5rem;
+                gap: 0.5rem;
+                box-shadow: var(--shadow-lg);
+                border: 1.5px solid rgba(255, 158, 181, 0.35);
+                transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 99;
+            }
+            .nav-links.open {
+                right: 1rem;
+            }
+            .nav-links a {
+                display: block;
+                text-align: center;
+                padding: 0.7rem 1rem;
+            }
+            .navbar {
+                border-radius: var(--radius);
+                padding: 0.6rem 1.2rem;
+            }
+        }
+
+        /* ============ 主布局 ============ */
+        .blog-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .blog-layout {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        /* ============ 主内容区 ============ */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        .section-title .icon {
+            font-size: 1.6rem;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border: 1.5px solid rgba(255, 158, 181, 0.35);
+            border-radius: 50px;
+            padding: 0.55rem 1.2rem;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .search-box:focus-within {
+            border-color: var(--pink);
+            box-shadow: 0 0 0 4px rgba(255, 158, 181, 0.12);
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.9rem;
+            color: var(--text);
+            width: 180px;
+            font-family: var(--font-main);
+        }
+        .search-box input::placeholder {
+            color: var(--text-lighter);
+        }
+        .search-box .search-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .search-clear {
+            display: none;
+            cursor: pointer;
+            background: var(--pink-light);
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            color: var(--pink-dark);
+            transition: var(--transition);
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .search-clear.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-clear:hover {
+            background: var(--pink);
+            color: #fff;
+        }
+
+        /* 文章卡片 */
+        .article-card {
+            background: var(--white);
+            border: 1.5px solid rgba(255, 158, 181, 0.2);
+            border-radius: var(--radius);
+            padding: 1.6rem 1.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+        }
+        .article-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--pink), var(--purple), var(--blue));
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 158, 181, 0.5);
+        }
+        .article-card:hover::before {
+            opacity: 1;
+        }
+        .article-card:active {
+            transform: scale(0.985);
+            transition: 0.1s ease;
+        }
+        .article-icon {
+            font-size: 2.4rem;
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--pink-light), var(--purple-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .article-card:hover .article-icon {
+            transform: rotate(-8deg) scale(1.08);
+            background: linear-gradient(135deg, #ffe0e8, #ede4f5);
+        }
+        .article-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .article-meta {
+            display: flex;
+            gap: 0.7rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-lighter);
+        }
+        .article-date {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-family: var(--font-decorative);
+        }
+        .article-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--text);
+            transition: var(--transition);
+            letter-spacing: -0.3px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .article-card:hover h3 {
+            color: var(--pink-dark);
+        }
+        .article-excerpt {
+            color: var(--text-light);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.7rem;
+        }
+        .article-tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.73rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            font-family: var(--font-main);
+        }
+        .tag-pink {
+            background: #fff0f3;
+            color: #d4687c;
+            border-color: #fdd4dc;
+        }
+        .tag-blue {
+            background: #f0f9fc;
+            color: #5a9db5;
+            border-color: #cde8f2;
+        }
+        .tag-purple {
+            background: #f7f2fb;
+            color: #8b7daa;
+            border-color: #e2d8f0;
+        }
+        .tag-mint {
+            background: #f0faf5;
+            color: #5fa882;
+            border-color: #c8ecd8;
+        }
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .tag.active-tag {
+            background: var(--pink);
+            color: #fff;
+            border-color: var(--pink);
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 158, 181, 0.35);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 2px dashed rgba(255, 158, 181, 0.3);
+            color: var(--text-lighter);
+        }
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* ============ 侧边栏 ============ */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 100px;
+        }
+        @media (max-width: 900px) {
+            .sidebar {
+                position: static;
+                top: auto;
+            }
+        }
+        .sidebar-card {
+            background: var(--white);
+            border: 1.5px solid rgba(255, 158, 181, 0.2);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .sidebar-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255, 158, 181, 0.4);
+        }
+        .sidebar-card h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .about-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffe0e8, #fdd4dc, #ede4f5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 0.8rem;
+            border: 3px solid #fff;
+            box-shadow: 0 6px 20px rgba(255, 158, 181, 0.25);
+            transition: var(--transition);
+        }
+        .about-avatar:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+        .about-name {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .about-bio {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+            line-height: 1.5;
+        }
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .tag-cloud .tag {
+            font-size: 0.75rem;
+            padding: 6px 14px;
+        }
+        .recent-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .recent-list li {
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text);
+            transition: var(--transition);
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .recent-list li:hover {
+            background: #fff5f7;
+            color: var(--pink-dark);
+            padding-left: 0.8rem;
+        }
+        .recent-list li::before {
+            content: '📎';
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #5fb878;
+            animation: statusPulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes statusPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(95, 184, 120, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(95, 184, 120, 0);
+            }
+        }
+
+        /* ============ 模态框 ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(60, 40, 50, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.25s ease;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 2rem 2.2rem;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: modalSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 158, 181, 0.25);
+        }
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(40px) scale(0.94);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fff0f3;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--pink-dark);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .modal-close:hover {
+            background: var(--pink);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        .modal-card .modal-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .modal-card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+        .modal-card .modal-meta {
+            font-size: 0.82rem;
+            color: var(--text-lighter);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .modal-card .modal-body {
+            color: var(--text);
+            line-height: 1.9;
+            font-size: 0.95rem;
+        }
+        .modal-card .modal-body p {
+            margin-bottom: 1rem;
+        }
+        .modal-card .modal-tags {
+            margin-top: 1.2rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ============ 回到顶部 ============ */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            box-shadow: 0 8px 25px rgba(255, 158, 181, 0.4);
+            transition: var(--transition);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--pink-dark);
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 14px 35px rgba(255, 158, 181, 0.5);
+        }
+        .back-to-top:active {
+            transform: scale(0.9);
+            transition: 0.1s ease;
+        }
+
+        /* ============ Toast ============ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #fff;
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 9999;
+            box-shadow: var(--shadow-lg);
+            border: 1.5px solid rgba(255, 158, 181, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ============ 响应式微调 ============ */
+        @media (max-width: 600px) {
+            .article-card {
+                flex-direction: column;
+                gap: 0.8rem;
+                padding: 1.2rem;
+            }
+            .article-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.8rem;
+                border-radius: 12px;
+            }
+            .article-card h3 {
+                font-size: 1rem;
+            }
+            .search-box input {
+                width: 120px;
+                font-size: 0.82rem;
+            }
+            .modal-card {
+                padding: 1.5rem;
+                border-radius: var(--radius);
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .navbar {
+                border-radius: var(--radius);
+                padding: 0.5rem 1rem;
+            }
+            .nav-brand {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 樱花飘落画布 -->
+    <canvas id="sakura-canvas"></canvas>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 导航栏 -->
+    <div class="app-container">
+        <nav class="navbar" id="navbar">
+            <a class="nav-brand" onclick="scrollToTop()">
+                <span class="brand-icon">🌸</span> 梦の记事本
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="active" onclick="navigateTo('home'); closeMenu();">🏠 首页</a></li>
+                <li><a href="#home" onclick="filterByTag('all'); closeMenu();">📝 全部笔记</a></li>
+                <li><a href="#home" onclick="filterByTag('技术'); closeMenu();">💻 技术</a></li>
+                <li><a href="#home" onclick="filterByTag('生活'); closeMenu();">🍵 生活</a></li>
+                <li><a href="#home" onclick="filterByTag('动漫'); closeMenu();">🎬 动漫</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <!-- 主布局 -->
+        <div class="blog-layout" id="home">
+            <!-- 主内容区 -->
+            <main class="main-content">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">📝</span> 最新笔记
+                    </div>
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="搜索笔记..." oninput="handleSearch()">
+                        <button class="search-clear" id="searchClear" onclick="clearSearch()" title="清除">✕</button>
+                    </div>
+                </div>
+                <div id="articlesContainer">
+                    <!-- 文章卡片由JS动态渲染 -->
+                </div>
+                <div class="empty-state" id="emptyState" style="display:none;">
+                    <span class="empty-icon">📭</span>
+                    <p>没有找到匹配的笔记呢~ 试试其他关键词吧！</p>
+                </div>
+            </main>
+
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <!-- 关于我 -->
+                <div class="sidebar-card" style="text-align:center;">
+                    <div class="about-avatar">🐱</div>
+                    <div class="about-name">小梦</div>
+                    <div class="about-bio">✨ 喜欢二次元、代码和甜食<br>这里是我的秘密笔记基地~</div>
+                    <div class="status-indicator" style="justify-content:center;margin-top:0.7rem;">
+                        <span class="status-dot"></span> 在线码字中...
+                    </div>
+                </div>
+
+                <!-- 标签云 -->
+                <div class="sidebar-card">
+                    <h4>🏷️ 标签云</h4>
+                    <div class="tag-cloud" id="tagCloud">
+                        <span class="tag tag-pink" onclick="filterByTag('技术')">技术</span>
+                        <span class="tag tag-blue" onclick="filterByTag('前端')">前端</span>
+                        <span class="tag tag-purple" onclick="filterByTag('CSS')">CSS</span>
+                        <span class="tag tag-mint" onclick="filterByTag('JavaScript')">JavaScript</span>
+                        <span class="tag tag-pink" onclick="filterByTag('动漫')">动漫</span>
+                        <span class="tag tag-blue" onclick="filterByTag('生活')">生活</span>
+                        <span class="tag tag-purple" onclick="filterByTag('推荐')">推荐</span>
+                        <span class="tag tag-mint" onclick="filterByTag('教程')">教程</span>
+                        <span class="tag tag-pink" onclick="filterByTag('资源')">资源</span>
+                        <span class="tag tag-blue" onclick="filterByTag('感悟')">感悟</span>
+                        <span class="tag tag-purple" onclick="filterByTag('AI')">AI</span>
+                        <span class="tag tag-mint" onclick="filterByTag('工具')">工具</span>
+                        <span class="tag tag-pink" onclick="filterByTag('全部')" style="font-weight:700;">🔄 全部</span>
+                    </div>
+                </div>
+
+                <!-- 最近文章 -->
+                <div class="sidebar-card">
+                    <h4>📌 最近笔记</h4>
+                    <ul class="recent-list" id="recentList">
+                        <!-- JS动态填充 -->
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- 文章详情模态框 -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal-card" id="modalCard">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-icon" id="modalIcon"></div>
+            <h2 id="modalTitle"></h2>
+            <div class="modal-meta" id="modalMeta"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-tags" id="modalTags"></div>
+        </div>
+    </div>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()" title="回到顶部">⬆</button>
+
+    <script>
+        // ============ 文章数据 ============
+        const articles = [{
+            id: 1,
+            icon: '💻',
+            title: 'CSS 实现超可爱的毛玻璃效果',
+            date: '2025-03-18',
+            excerpt: '最近在做一个二次元风格的项目，研究了一下毛玻璃（Glassmorphism）效果。用 backdrop-filter 加上柔和的粉色背景，简直不要太好看！这篇文章记录了一些实用的 CSS 技巧和踩坑经验...',
+            tags: ['技术', 'CSS', '前端'],
+            tagClasses: ['tag-pink', 'tag-purple', 'tag-blue'],
+            content: `
+                        <p>最近在做一个二次元风格的个人项目，深深迷上了<strong>毛玻璃效果（Glassmorphism）</strong>。这种效果能让界面看起来既现代又柔和，特别适合二次元风格的网站设计。</p>
+                        <p>核心属性就是 CSS 的 <code>backdrop-filter: blur()</code>，配合半透明背景色使用。比如：</p>
+                        <p><code>background: rgba(255,255,255,0.6); backdrop-filter: blur(15px);</code></p>
+                        <p>再加上柔和的粉色渐变边框和圆角，整个卡片的质感就出来了。记得给父元素设置好背景图或背景色，不然 blur 效果看不出来哦~</p>
+                        <p>另外一个小技巧是使用 <code>box-shadow</code> 增加层次感，柔和的阴影能让毛玻璃卡片更有"浮起来"的感觉。推荐使用粉色系或紫色系的阴影颜色，超可爱的！✨</p>
+                    `
+        }, {
+            id: 2,
+            icon: '🎬',
+            title: '四月新番推荐：这几部绝对不能错过',
+            date: '2025-03-15',
+            excerpt: '又到了每季一度的新番推荐时间！这一季的番剧质量意外地高，有几部简直是神作预定。整理了一下我个人最推荐的几部，给同样喜欢追番的小伙伴们参考~...',
+            tags: ['动漫', '推荐', '生活'],
+            tagClasses: ['tag-pink', 'tag-blue', 'tag-mint'],
+            content: `
+                        <p>四月新番已经陆续开播啦！这一季的阵容真的让人惊喜，好几部都是期待已久的续作和重磅新作。</p>
+                        <p><strong>🌟 首推：</strong>某部奇幻冒险番的第二季，制作水准比第一季又提升了不少，战斗场面流畅到让人起鸡皮疙瘩。OP和ED也都超好听，已经单曲循环了！</p>
+                        <p><strong>💫 黑马：</strong>一部原创新番，开播前没怎么关注，结果第一集就封神。画风清新治愈，剧情温暖人心，适合在疲惫的时候看一集放松心情。</p>
+                        <p>总之这一季的选择很丰富，热血、治愈、搞笑、悬疑都有覆盖。大家有什么好看的新番也欢迎推荐给我呀~ 🎀</p>
+                    `
+        }, {
+            id: 3,
+            icon: '📖',
+            title: 'JavaScript 异步编程小笔记',
+            date: '2025-03-10',
+            excerpt: '整理了一下 JS 异步编程的核心概念：Callback、Promise、async/await。用简单易懂的例子说明它们之间的区别和联系，适合初学者复习使用。附带一些常见的面试题解析...',
+            tags: ['技术', 'JavaScript', '教程'],
+            tagClasses: ['tag-pink', 'tag-mint', 'tag-purple'],
+            content: `
+                        <p>JavaScript 的异步编程是每个前端开发者都必须掌握的核心技能。从早期的回调函数到现代的 async/await，异步处理的方式越来越优雅。</p>
+                        <p><strong>Callback 时代：</strong>最早的异步处理方式，但容易出现"回调地狱"，代码层层嵌套难以维护。</p>
+                        <p><strong>Promise：</strong>ES6 引入的 Promise 对象让异步代码变得更加清晰，链式调用 <code>.then()</code> 和 <code>.catch()</code> 让错误处理也更方便。</p>
+                        <p><strong>async/await：</strong>ES8 带来的语法糖，让异步代码看起来像同步代码一样直观。用 <code>try/catch</code> 包裹就能优雅地处理错误，强烈推荐在项目中使用！</p>
+                        <p>理解这些概念对于日常开发和面试都很重要，建议多写一些练习来加深理解~ 📝</p>
+                    `
+        }, {
+            id: 4,
+            icon: '🍵',
+            title: '治愈系日常：一个人的周末慢生活',
+            date: '2025-03-05',
+            excerpt: '周末没有安排，睡到自然醒，泡一杯热茶，翻开买了很久的书。窗外阳光正好，猫咪在脚边打盹。记录一下这个慵懒又治愈的周末时光，以及一些让生活变得更美好的小习惯...',
+            tags: ['生活', '感悟'],
+            tagClasses: ['tag-mint', 'tag-purple'],
+            content: `
+                        <p>难得的周末，没有闹钟，没有deadline。阳光透过窗帘的缝隙洒进来，暖洋洋的。</p>
+                        <p>起床后先冲了一杯抹茶拿铁，用的是新买的抹茶粉，颜色翠绿，味道醇厚。配上昨天烤的小饼干，简简单单的早餐却让人特别满足。</p>
+                        <p>下午窝在沙发上看书，猫咪跳上来蜷在腿边，发出咕噜咕噜的声音。窗外偶尔传来鸟叫声，整个世界都慢了下来。</p>
+                        <p>有时候觉得，幸福就藏在这些平凡的小瞬间里。不需要多么轰轰烈烈，一杯热茶、一本好书、一只粘人的猫咪，就足够治愈一周的疲惫了。🍀</p>
+                    `
+        }, {
+            id: 5,
+            icon: '🤖',
+            title: '用 AI 工具提升效率的实用技巧',
+            date: '2025-02-28',
+            excerpt: '分享一些我日常使用的 AI 工具和技巧，包括代码生成、文案优化、图片处理等方面。合理使用 AI 真的能大幅提升工作效率，但也要注意不能过度依赖哦~...',
+            tags: ['技术', 'AI', '工具'],
+            tagClasses: ['tag-blue', 'tag-pink', 'tag-mint'],
+            content: `
+                        <p>AI 工具现在已经深入到日常工作的方方面面了。合理利用它们，真的能节省大量时间。</p>
+                        <p><strong>代码方面：</strong>GitHub Copilot 和 Cursor 都是很棒的 AI 编程助手，能快速生成样板代码、帮忙调试错误。但要注意，生成的代码还是要自己审查一遍，确保逻辑正确。</p>
+                        <p><strong>文案方面：</strong>写博客或者文档卡壳的时候，可以让 AI 帮忙生成初稿或大纲，然后再根据自己的想法修改润色。</p>
+                        <p><strong>学习方面：</strong>遇到不懂的概念，可以直接问 AI 解释，它能把复杂的东西讲得通俗易懂。不过关键知识点还是要查阅权威资料确认哦~</p>
+                        <p>总之，AI 是很好的辅助工具，但不能完全替代自己的思考和判断。善用工具，保持独立思考！✨</p>
+                    `
+        }, {
+            id: 6,
+            icon: '🎨',
+            title: '超好用的前端资源网站合集',
+            date: '2025-02-20',
+            excerpt: '整理了一波我收藏的前端开发资源网站，包括图标库、配色方案、动画效果、免费插画等。很多都是免费可商用的，对个人项目和小团队特别友好。持续更新中...',
+            tags: ['资源', '前端', '推荐'],
+            tagClasses: ['tag-mint', 'tag-blue', 'tag-pink'],
+            content: `
+                        <p>做前端开发，好的资源能让效率翻倍！这里整理了一些我常用的宝藏网站：</p>
+                        <p><strong>🎨 配色方案：</strong>Coolors.co 可以快速生成好看的配色组合；Happy Hues 则提供了很多带实际示例的配色灵感。</p>
+                        <p><strong>🖼️ 图标库：</strong>Lucide Icons 和 Phosphor Icons 都是免费开源的图标库，风格简洁好看，支持 SVG 和多种框架。</p>
+                        <p><strong>✨ 动画效果：</strong>Animista 提供了大量预设的 CSS 动画，可以直接复制代码使用；LottieFiles 上有很多高质量的动画素材。</p>
+                        <p><strong>📸 免费插画：</strong>unDraw 和 Blush 提供可自定义颜色的免费插画，非常适合用在 landing page 或博客里。</p>
+                        <p>这些都是我亲测好用的资源，建议收藏起来，做项目的时候能节省不少时间！💪</p>
+                    `
+        }];
+
+        // ============ 状态管理 ============
+        let activeTag = 'all';
+        let searchQuery = '';
+
+        // ============ 渲染函数 ============
+        function getFilteredArticles() {
+            return articles.filter(article => {
+                const matchesTag = activeTag === 'all' || article.tags.includes(activeTag);
+                const matchesSearch = searchQuery === '' ||
+                    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    article.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesTag && matchesSearch;
+            });
+        }
+
+        function renderArticles() {
+            const container = document.getElementById('articlesContainer');
+            const emptyState = document.getElementById('emptyState');
+            const filtered = getFilteredArticles();
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                container.innerHTML = filtered.map(article => `
+                            <article class="article-card" onclick="openArticle(${article.id})" title="点击阅读全文">
+                                <div class="article-icon">${article.icon}</div>
+                                <div class="article-body">
+                                    <div class="article-meta">
+                                        <span class="article-date">📅 ${article.date}</span>
+                                        <span>📖 ${Math.floor(Math.random()*800+200)} 字</span>
+                                    </div>
+                                    <h3>${article.title}</h3>
+                                    <p class="article-excerpt">${article.excerpt}</p>
+                                    <div class="article-tags">
+                                        ${article.tags.map((tag, i) => `
+                                            <span class="tag ${article.tagClasses[i] || 'tag-pink'}" 
+                                                  onclick="event.stopPropagation(); filterByTag('${tag}')"
+                                                  title="筛选「${tag}」相关笔记">#${tag}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </article>
+                        `).join('');
+            }
+
+            updateTagCloudActive();
+            updateRecentList();
+            updateNavActive();
+        }
+
+        function updateTagCloudActive() {
+            const allTags = document.querySelectorAll('#tagCloud .tag');
+            allTags.forEach(tagEl => {
+                const tagText = tagEl.textContent.replace('🔄 ', '').trim();
+                if (tagText === activeTag || (activeTag === 'all' && tagText === '全部')) {
+                    tagEl.classList.add('active-tag');
+                } else {
+                    tagEl.classList.remove('active-tag');
+                }
+            });
+        }
+
+        function updateRecentList() {
+            const recentList = document.getElementById('recentList');
+            const recentArticles = articles.slice(0, 5);
+            recentList.innerHTML = recentArticles.map(a => `
+                        <li onclick="openArticle(${a.id})" title="点击阅读">${a.title}</li>
+                    `).join('');
+        }
+
+        function updateNavActive() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const linkText = link.textContent.trim();
+                const filterTag = link.getAttribute('onclick')?.match(/filterByTag\('(.+?)'\)/)?.[1];
+                if (filterTag === activeTag || (activeTag === 'all' && filterTag === 'all')) {
+                    link.classList.add('active');
+                }
+            });
+            // 首页链接
+            const homeLink = document.querySelector('.nav-links a[href="#home"]');
+            if (homeLink && activeTag === 'all' && searchQuery === '') {
+                homeLink.classList.add('active');
+            }
+        }
+
+        // ============ 筛选与搜索 ============
+        function filterByTag(tag) {
+            if (tag === '全部') tag = 'all';
+            activeTag = tag;
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').classList.remove('visible');
+            renderArticles();
+            document.getElementById('articlesContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast(`🔖 筛选：${tag === 'all' ? '全部笔记' : '#' + tag}`);
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('searchClear');
+            searchQuery = input.value.trim();
+            if (searchQuery) {
+                clearBtn.classList.add('visible');
+                activeTag = 'all';
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+            renderArticles();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('searchClear').classList.remove('visible');
+            renderArticles();
+            document.getElementById('searchInput').focus();
+        }
+
+        // ============ 模态框 ============
+        function openArticle(id) {
+            const article = articles.find(a => a.id === id);
+            if (!article) return;
+
+            document.getElementById('modalIcon').textContent = article.icon;
+            document.getElementById('modalTitle').textContent = article.title;
+            document.getElementById('modalMeta').innerHTML = `
+                        <span>📅 ${article.date}</span>
+                        <span>📝 约${Math.floor(Math.random()*500+300)}字</span>
+                    `;
+            document.getElementById('modalBody').innerHTML = article.content;
+            document.getElementById('modalTags').innerHTML = article.tags.map((tag, i) => `
+                        <span class="tag ${article.tagClasses[i] || 'tag-pink'}" 
+                              onclick="event.stopPropagation(); closeModal(); filterByTag('${tag}')"
+                              style="cursor:pointer;">#${tag}</span>
+                    `).join('');
+
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modalCard').scrollTop = 0;
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOutside(event) {
+            if (event.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        }
+
+        // ESC 关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // ============ Toast ============
+        let toastTimer;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        // ============ 回到顶部 ============
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+
+            // 导航栏阴影
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 30) {
+                navbar.style.boxShadow = '0 8px 30px rgba(255,158,181,0.2)';
+            } else {
+                navbar.style.boxShadow = '0 2px 12px rgba(255,158,181,0.1)';
+            }
+        });
+
+        // ============ 汉堡菜单 ============
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('open');
+        }
+
+        // 点击页面其他区域关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar') && navLinks.classList.contains('open')) {
+                closeMenu();
+            }
+        });
+
+        function navigateTo(section) {
+            document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+            activeTag = 'all';
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').classList.remove('visible');
+            renderArticles();
+        }
+
+        // ============ 樱花动画 ============
+        const sakuraCanvas = document.getElementById('sakura-canvas');
+        const ctx = sakuraCanvas.getContext('2d');
+        let sakuraParticles = [];
+        const maxParticles = 55;
+
+        function resizeCanvas() {
+            sakuraCanvas.width = window.innerWidth;
+            sakuraCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class SakuraPetal {
+            constructor() {
+                this.reset(true);
+            }
+            reset(initial = false) {
+                this.x = Math.random() * sakuraCanvas.width;
+                this.y = initial ? Math.random() * sakuraCanvas.height : -40 - Math.random() * 200;
+                this.size = 4 + Math.random() * 10;
+                this.speedY = 0.6 + Math.random() * 2.2;
+                this.speedX = -0.4 + Math.random() * 0.8;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.03;
+                this.opacity = 0.35 + Math.random() * 0.5;
+                this.color = Math.random() < 0.6 ?
+                    `rgba(255,${180 + Math.random()*60},${190 + Math.random()*50},` :
+                    `rgba(255,${210 + Math.random()*45},${210 + Math.random()*40},`;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y * 0.015) * 0.5;
+                this.rotation += this.rotationSpeed;
+                if (this.y > sakuraCanvas.height + 50 || this.x < -60 || this.x > sakuraCanvas.width + 60) {
+                    this.reset();
+                }
+            }
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color + `${this.opacity})`;
+                ctx.beginPath();
+                // 画花瓣形状
+                const s = this.size;
+                ctx.moveTo(0, -s * 0.6);
+                ctx.bezierCurveTo(s * 0.5, -s * 0.6, s * 0.8, -s * 0.1, s * 0.35, s * 0.5);
+                ctx.bezierCurveTo(s * 0.2, s * 0.2, -s * 0.2, s * 0.2, -s * 0.35, s * 0.5);
+                ctx.bezierCurveTo(-s * 0.8, -s * 0.1, -s * 0.5, -s * 0.6, 0, -s * 0.6);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initSakura() {
+            sakuraParticles = [];
+            for (let i = 0; i < maxParticles; i++) {
+                sakuraParticles.push(new SakuraPetal());
+            }
+        }
+        initSakura();
+
+        function animateSakura() {
+            ctx.clearRect(0, 0, sakuraCanvas.width, sakuraCanvas.height);
+            sakuraParticles.forEach(p => {
+                p.update();
+                p.draw(ctx);
+            });
+            requestAnimationFrame(animateSakura);
+        }
+        animateSakura();
+
+        // 窗口大小变化时重新初始化
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initSakura();
+        });
+
+        // ============ 初始化 ============
+        function init() {
+            renderArticles();
+            updateRecentList();
+        }
+        init();
+
+        // ============ 键盘快捷键 ============
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+K 或 / 聚焦搜索
+            if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && !e.ctrlKey && document.activeElement === document
+                    .body)) {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+                document.getElementById('searchInput').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        console.log('🌸 梦の记事本 - 二次元个人博客已就绪！');
+        console.log('💡 提示：按 / 或 Ctrl+K 快速搜索');
+        console.log('📝 共加载 ' + articles.length + ' 篇笔记');
+    </script>
+</body>
+</html>
